@@ -1,52 +1,44 @@
 from tkinter import *
 import random
-
-GAME_WIDTH = 1000 # Width of the game window, in pixels
-GAME_HEIGHT = 700 # Height of the game window, in pixels
-SPEED = 75 # Speed (higher = slower, lower = faster)
-SPACE_SIZE = 25 # Size of all game components as rendered in the game window (lower = smaller, higher = larger)
-BODY_PARTS = 3 # Number of snake body parts at the start of the game
-SNAKE_COLOR = "#00FF00" # Snake body color
-FOOD_COLOR = "#FF0000" # Snake food color
-BACKGROUND_COLOR = "#000000" # Color of the game background
+from settings import Settings
 
 class Snake:
     def __init__(self):
-        self.body_size = BODY_PARTS
+        self.body_size = settings.BODY_PARTS
         self.coordinates = []
         self.squares = []
 
-        for i in range(0, BODY_PARTS):
+        for i in range(0, settings.BODY_PARTS):
             self.coordinates.append([0,0])
 
         for x, y, in self.coordinates:
-            square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_COLOR, tag="snake")
+            square = canvas.create_rectangle(x, y, x + settings.SPACE_SIZE, y + settings.SPACE_SIZE, fill=settings.SNAKE_COLOR, tag="snake")
             self.squares.append(square)
 
 class Food:
     def __init__(self):
-        x = random.randint(0, int(GAME_WIDTH / SPACE_SIZE-1)) * SPACE_SIZE
-        y = random.randint(0, int(GAME_HEIGHT / SPACE_SIZE-1)) * SPACE_SIZE
+        x = random.randint(0, int(settings.GAME_WIDTH / settings.SPACE_SIZE-1)) * settings.SPACE_SIZE
+        y = random.randint(0, int(settings.GAME_HEIGHT / settings.SPACE_SIZE-1)) * settings.SPACE_SIZE
 
         self.coordinates = [x, y]
 
-        canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=FOOD_COLOR, tag="food")
+        canvas.create_oval(x, y, x + settings.SPACE_SIZE, y + settings.SPACE_SIZE, fill=settings.FOOD_COLOR, tag="food")
 
 def next_turn(snake, food):
     x, y = snake.coordinates[0]
 
     if direction == 'up':
-        y -= SPACE_SIZE
+        y -= settings.SPACE_SIZE
     elif direction == 'down':
-        y += SPACE_SIZE
+        y += settings.SPACE_SIZE
     elif direction == 'left':
-        x -= SPACE_SIZE
+        x -= settings.SPACE_SIZE
     elif direction == 'right':
-        x += SPACE_SIZE
+        x += settings.SPACE_SIZE
 
     snake.coordinates.insert(0, (x, y))
 
-    square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_COLOR)
+    square = canvas.create_rectangle(x, y, x + settings.SPACE_SIZE, y + settings.SPACE_SIZE, fill=settings.SNAKE_COLOR)
 
     snake.squares.insert(0, square)
 
@@ -64,7 +56,7 @@ def next_turn(snake, food):
     if check_collisions(snake):
         game_over()
     else:
-        window.after(SPEED, next_turn, snake, food)
+        window.after(settings.SPEED, next_turn, snake, food)
 
 def change_direction(new_direction):
     global direction
@@ -86,9 +78,9 @@ def check_collisions(snake):
     
     x, y = snake.coordinates[0]
 
-    if x < 0 or x >= GAME_WIDTH:
+    if x < 0 or x >= settings.GAME_WIDTH:
         return True
-    elif y < 0 or y >= GAME_HEIGHT:
+    elif y < 0 or y >= settings.GAME_HEIGHT:
         return True
     
     for body_part in snake.coordinates[1:]:
@@ -103,6 +95,8 @@ def game_over():
     canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2,
                        font=('consolas',70), text="GAME OVER", fill="red", tag="game_over")
 
+settings = Settings()
+
 window = Tk()
 window.title("Snake game")
 window.resizable(False,False)
@@ -113,7 +107,7 @@ direction = "down"
 label = Label(window, text="Score:{}".format(score), font=('consolas',40))
 label.pack()
 
-canvas = Canvas(window, bg=BACKGROUND_COLOR, height=GAME_HEIGHT, width=GAME_WIDTH)
+canvas = Canvas(window, bg=settings.BACKGROUND_COLOR, height=settings.GAME_HEIGHT, width=settings.GAME_WIDTH)
 canvas.pack()
 
 window.update()
